@@ -7,7 +7,7 @@ resource "aws_vpc" "main" {
   cidr_block           = "10.0.0.0/16"
   enable_dns_hostnames = true
   enable_dns_support   = true
-  tags = { Name = "main-vpc" }
+  tags                 = { Name = "main-vpc" }
 }
 
 resource "aws_internet_gateway" "igw" {
@@ -28,7 +28,7 @@ resource "aws_subnet" "subnet1" {
   cidr_block              = "10.0.1.0/24"
   availability_zone       = "us-east-1a"
   map_public_ip_on_launch = true
-  tags = { Name = "subnet-1" }
+  tags                    = { Name = "subnet-1" }
 }
 
 resource "aws_subnet" "subnet2" {
@@ -36,7 +36,7 @@ resource "aws_subnet" "subnet2" {
   cidr_block              = "10.0.2.0/24"
   availability_zone       = "us-east-1b"
   map_public_ip_on_launch = true
-  tags = { Name = "subnet-2" }
+  tags                    = { Name = "subnet-2" }
 }
 
 resource "aws_route_table_association" "a1" {
@@ -79,19 +79,19 @@ resource "aws_db_subnet_group" "default" {
 
 # --- RDS MySQL ---
 resource "aws_db_instance" "mysql" {
-  identifier              = "fiap"
-  allocated_storage       = 20
-  max_allocated_storage   = 100
-  engine                  = "mysql"
-  engine_version          = "8.0"
-  instance_class          = "db.t3.micro"
-  username                = "user_fiap"
-  password                = "pass_fiap"
-  parameter_group_name    = "default.mysql8.0"
-  skip_final_snapshot     = true
-  db_subnet_group_name    = aws_db_subnet_group.default.name
-  vpc_security_group_ids  = [aws_security_group.rds_sg.id]
-  publicly_accessible     = true
+  identifier             = "fiap"
+  allocated_storage      = 20
+  max_allocated_storage  = 100
+  engine                 = "mysql"
+  engine_version         = "8.0"
+  instance_class         = "db.t3.micro"
+  username               = "user_fiap"
+  password               = "pass_fiap"
+  parameter_group_name   = "default.mysql8.0"
+  skip_final_snapshot    = true
+  db_subnet_group_name   = aws_db_subnet_group.default.name
+  vpc_security_group_ids = [aws_security_group.rds_sg.id]
+  publicly_accessible    = true
 }
 
 # --- Executar script init.sql ---
@@ -99,7 +99,7 @@ resource "null_resource" "db_init" {
   depends_on = [aws_db_instance.mysql]
 
   provisioner "local-exec" {
-    command = "& \"C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin\\mysql.exe\" -h ${aws_db_instance.mysql.address} -u ${aws_db_instance.mysql.username} -p${aws_db_instance.mysql.password} -e \"source init.sql;\""
+    command     = "& \"C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin\\mysql.exe\" -h ${aws_db_instance.mysql.address} -u ${aws_db_instance.mysql.username} -p${aws_db_instance.mysql.password} -e \"source init.sql;\""
     interpreter = ["PowerShell", "-Command"]
   }
 }
