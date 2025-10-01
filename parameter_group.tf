@@ -1,4 +1,3 @@
-
 resource "aws_db_parameter_group" "mysql_params" {
   name   = "${var.project_name}-mysql-params"
   family = "mysql8.0"

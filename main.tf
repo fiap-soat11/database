@@ -1,4 +1,3 @@
-
 resource "random_password" "master" {
   length  = 20
   special = true

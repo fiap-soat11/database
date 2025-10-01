@@ -1,10 +1,12 @@
-
-data "aws_vpc" "selected" { id = var.vpc_id }
+data "aws_vpc" "selected" {
+  id = var.vpc_id
+}
 
 resource "aws_db_subnet_group" "this" {
   name       = "${var.project_name}-rds-subnets"
   subnet_ids = var.private_subnet_ids
-  tags       = { Name = "${var.project_name}-rds-subnets" }
+
+  tags = { Name = "${var.project_name}-rds-subnets" }
 }
 
 resource "aws_security_group" "rds_mysql" {
@@ -29,6 +31,7 @@ resource "aws_security_group" "rds_mysql" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
   tags = { Name = "${var.project_name}-rds-sg" }
 }
 

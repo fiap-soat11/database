@@ -21,6 +21,7 @@ variable "private_subnet_ids" {
   ]
 }
 
+# DB
 variable "db_name" {
   type    = string
   default = "fiap"
@@ -51,6 +52,7 @@ variable "max_allocated_storage" {
   default = 100
 }
 
+# Segurança
 variable "kms_key_id" {
   type    = string
   default = null
@@ -68,6 +70,7 @@ variable "allowed_cidr_blocks" {
   default = []
 }
 
+# Operação
 variable "backup_retention_period" {
   type    = number
   default = 7
@@ -98,6 +101,7 @@ variable "multi_az" {
   default = false
 }
 
+# Init SQL
 variable "init_sql_paths" {
   type = list(string)
   default = [
@@ -111,6 +115,7 @@ variable "run_db_init" {
   default = true
 }
 
+# Overrides (para túnel/Cloud9, se precisar)
 variable "override_init_host" {
   type    = string
   default = null
