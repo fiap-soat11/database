@@ -10,7 +10,7 @@ jobs:
           - name: Baixando arquivos do repo
             uses: actions/checkout@v4
           - name: Permissao arquivo
-            run: chmod +x ./init/sql/1_inicializacao.sh
+            run: chmod +x ./init/sql/1_inicializacao.sql
           - name: Ls
             run: ls -la ./init/sql/
           #- name: Aws Credentials
