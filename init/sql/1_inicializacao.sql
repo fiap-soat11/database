@@ -242,4 +242,3 @@ VALUES
 
 INSERT INTO Forma_pagamento (nome, descricao, ativo) 
 VALUES('Mercado Pago', 'Pagamento via carteira digital Mercado Pago', 1);
-

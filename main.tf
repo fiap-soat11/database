@@ -1,110 +1,96 @@
-provider "aws" {
-  region = var.aws_region
+resource "random_password" "master" {
+  length  = 20
+  special = false
 }
 
-# --- VPC ---
-resource "aws_vpc" "main" {
-  cidr_block           = "10.0.0.0/16"
-  enable_dns_hostnames = true
-  enable_dns_support   = true
-  tags                 = { Name = "main-vpc" }
+resource "aws_secretsmanager_secret" "db_master" {
+  name        = "${var.project_name}-secret/rds-mysql/master"
+  description = "Master credentials for ${var.project_name} RDS MySQL"
+  kms_key_id  = var.kms_key_id
 }
 
-resource "aws_internet_gateway" "igw" {
-  vpc_id = aws_vpc.main.id
-  tags   = { Name = "main-igw" }
+resource "aws_secretsmanager_secret_version" "db_master_val" {
+  secret_id = aws_secretsmanager_secret.db_master.id
+  secret_string = jsonencode({
+    username = var.db_username
+    password = random_password.master.result
+  })
 }
 
-resource "aws_route_table" "rt" {
-  vpc_id = aws_vpc.main.id
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.igw.id
-  }
-}
-
-resource "aws_subnet" "subnet1" {
-  vpc_id                  = aws_vpc.main.id
-  cidr_block              = "10.0.1.0/24"
-  availability_zone       = "us-east-1a"
-  map_public_ip_on_launch = true
-  tags                    = { Name = "subnet-1" }
-}
-
-resource "aws_subnet" "subnet2" {
-  vpc_id                  = aws_vpc.main.id
-  cidr_block              = "10.0.2.0/24"
-  availability_zone       = "us-east-1b"
-  map_public_ip_on_launch = true
-  tags                    = { Name = "subnet-2" }
-}
-
-resource "aws_route_table_association" "a1" {
-  subnet_id      = aws_subnet.subnet1.id
-  route_table_id = aws_route_table.rt.id
-}
-
-resource "aws_route_table_association" "a2" {
-  subnet_id      = aws_subnet.subnet2.id
-  route_table_id = aws_route_table.rt.id
-}
-
-# --- Security Group ---
-resource "aws_security_group" "rds_sg" {
-  name        = "rds-mysql-sg"
-  description = "Permite acesso MySQL"
-  vpc_id      = aws_vpc.main.id
-
-  ingress {
-    description = "MySQL"
-    from_port   = 3306
-    to_port     = 3306
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # devo trocar depois para meu IP!
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-
-# --- Subnet Group ---
-resource "aws_db_subnet_group" "default" {
-  name       = "rds-subnet-group"
-  subnet_ids = [aws_subnet.subnet1.id, aws_subnet.subnet2.id]
-}
-
-# --- RDS MySQL ---
 resource "aws_db_instance" "mysql" {
-  identifier             = "fiap"
-  allocated_storage      = 20
-  max_allocated_storage  = 100
-  engine                 = "mysql"
-  engine_version         = "8.0"
-  instance_class         = "db.t3.micro"
-  username               = "user_fiap"
-  password               = "pass_fiap"
-  parameter_group_name   = "default.mysql8.0"
-  skip_final_snapshot    = true
-  db_subnet_group_name   = aws_db_subnet_group.default.name
-  vpc_security_group_ids = [aws_security_group.rds_sg.id]
-  publicly_accessible    = true
+  identifier     = "${var.project_name}-mysql"
+  engine         = "mysql"
+  engine_version = var.db_engine_version == null ? null : var.db_engine_version
+
+  instance_class = var.instance_class
+  username       = var.db_username
+  password       = jsondecode(aws_secretsmanager_secret_version.db_master_val.secret_string).password
+  db_name        = var.db_name
+
+  allocated_storage     = var.allocated_storage
+  max_allocated_storage = var.max_allocated_storage
+
+  storage_encrypted = true
+  kms_key_id        = var.kms_key_id
+
+  db_subnet_group_name   = aws_db_subnet_group.this.name
+  vpc_security_group_ids = [aws_security_group.rds_mysql.id]
+
+  publicly_accessible = false
+  multi_az            = var.multi_az
+
+  backup_retention_period    = var.backup_retention_period
+  deletion_protection        = var.deletion_protection
+  copy_tags_to_snapshot      = true
+  auto_minor_version_upgrade = true
+  apply_immediately          = false
+
+  monitoring_interval                 = var.enable_enhanced_monitoring ? var.monitoring_interval : 0
+  parameter_group_name                = aws_db_parameter_group.mysql_params.name
+  iam_database_authentication_enabled = var.enable_iam_auth
+
+  tags = { Name = "${var.project_name}-mysql" }
+
+    skip_final_snapshot = true
 }
 
-# --- Executar script init.sql ---
-resource "null_resource" "db_init" {
-  depends_on = [aws_db_instance.mysql]
+locals {
+  init_host = var.override_init_host != null ? var.override_init_host : aws_db_instance.mysql.address
+  init_port = var.override_init_port != null ? var.override_init_port : 3306
+}
 
-  provisioner "local-exec" {
-    command     = "& \"C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin\\mysql.exe\" -h ${aws_db_instance.mysql.address} -u ${aws_db_instance.mysql.username} -p${aws_db_instance.mysql.password} -e \"source init.sql;\""
-    interpreter = ["PowerShell", "-Command"]
+resource "null_resource" "db_init_sql" {
+  count = var.run_db_init ? 1 : 0
+
+  triggers = {
+    db_endpoint = aws_db_instance.mysql.endpoint
+    files_list  = join(" ", formatlist("${path.module}/init/sql/%s", var.init_sql_paths))
+    init_host   = local.init_host
+    init_port   = tostring(local.init_port)
   }
+
+  //provisioner "local-exec" {
+  //  interpreter = ["pwsh", "-NoProfile", "-ExecutionPolicy", "Bypass", "-Command"]
+  //  working_dir = "${path.module}/init"
+  //  command     = <<-PS
+  //    .\\run_sql.ps1 -DbHost "${local.init_host}" -DbPort ${local.init_port} -DbName "${var.db_name}" -SecretArn "${aws_secretsmanager_secret.db_master.arn}" -FilesList "${join(" ", formatlist("${path.module}/init/sql/%s", var.init_sql_paths))}"
+  //  PS
+  //}
+  provisioner "local-exec" {
+    interpreter = ["/bin/bash", "-c"]
+    working_dir = "${path.module}/init"
+    command     = <<-BASH
+      ./run_sql.sh "${local.init_host}" ${local.init_port} "${var.db_name}" "${aws_secretsmanager_secret.db_master.arn}" 
+      BASH
+  }
+
+  depends_on = [
+    aws_db_instance.mysql,
+    aws_secretsmanager_secret_version.db_master_val
+  ]
 }
 
-# --- Output para facilitar ---
-output "rds_endpoint" {
-  value = aws_db_instance.mysql.address
-}
+output "db_endpoint" { value = aws_db_instance.mysql.endpoint }
+output "db_address" { value = aws_db_instance.mysql.address }
+output "db_port" { value = 3306 }
+output "secrets_manager_arn" { value = aws_secretsmanager_secret.db_master.arn }

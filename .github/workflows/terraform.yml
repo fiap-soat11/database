@@ -5,6 +5,10 @@ jobs:
     RDS_MYSQL:
       runs-on: ubuntu-latest
       steps:
+          - name: Setup Mysql
+            uses: mirromutth/mysql-action@@v1.1
+            with:
+              mysql version: '8.0'
           - name: Baixando arquivos do repo
             uses: actions/checkout@v4
           - name: Aws Credentials
@@ -23,4 +27,4 @@ jobs:
           - name: Terraform Validate
             run: terraform validate
           - name: Terraform Apply RDS MySQL
-            run: terraform apply -input=false -auto-approve
+            run: terraform apply -var="aws_region=${{ vars.AWS_REGION }}" -auto-approve
