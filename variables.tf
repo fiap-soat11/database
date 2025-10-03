@@ -1,3 +1,9 @@
+variable "idSecret" {
+  type    = string
+  default = "fiap12345678"
+
+}
+
 variable "aws_region" {
   type    = string
   default = "us-east-1"
