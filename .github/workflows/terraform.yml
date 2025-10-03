@@ -9,6 +9,8 @@ jobs:
             run: mysql --version 
           - name: Baixando arquivos do repo
             uses: actions/checkout@v4
+          - name: Permissao arquivo
+            run: chmod +x ./init/sql/1_inicializacao.sh
           - name: Aws Credentials
             uses: aws-actions/configure-aws-credentials@v4
             with:
