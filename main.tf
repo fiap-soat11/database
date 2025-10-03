@@ -4,7 +4,7 @@ resource "random_password" "master" {
 }
 
 resource "aws_secretsmanager_secret" "db_master" {
-  name        = "${var.project_name}-secret/rds-mysql/master"
+  name        = "${var.project_name}-${var.idSecret}/rds-mysql/master"
   description = "Master credentials for ${var.project_name} RDS MySQL"
   kms_key_id  = var.kms_key_id
 }
@@ -51,7 +51,7 @@ resource "aws_db_instance" "mysql" {
 
   tags = { Name = "${var.project_name}-mysql" }
 
-    skip_final_snapshot = true
+  skip_final_snapshot = true
 }
 
 locals {
