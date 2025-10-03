@@ -5,24 +5,26 @@ jobs:
     RDS_MYSQL:
       runs-on: ubuntu-latest
       steps:
-          - name: Setup Mysql
-            uses: mirromutth/mysql-action@v1.1
-            with:
-              mysql version: '8.0'
-          - name: Baixando arquivos do repo
-            uses: actions/checkout@v4
-          - name: Aws Credentials
-            uses: aws-actions/configure-aws-credentials@v4
-            with:
-              aws-access-key-id: ${{ vars.AWS_ACCESS_KEY_ID }}
-              aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-              aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-              aws-region: ${{ vars.AWS_REGION }}  
-          - name: Configurando Terraform
-            uses: hashicorp/setup-terraform@v3
-          - name: Terraform Init
-            run: terraform init -input=false
-          - name: Terraform Format
-            run: terraform fmt -check
-          - name: Terraform Apply RDS MySQL
-            run: terraform apply -var="aws_region=${{ vars.AWS_REGION }}" -var="idSecret=${{ github.run_id }}" -auto-approve
+          #- name: Setup Mysql
+          #  uses: mirromutth/mysql-action@v1.1
+          #  with:
+          #    mysql version: '8.0'
+          - name: Verificando Mysql
+            run: mysql --version # sudo apt install mysql-client
+          #- name: Baixando arquivos do repo
+          #  uses: actions/checkout@v4
+          #- name: Aws Credentials
+          #  uses: aws-actions/configure-aws-credentials@v4
+          #  with:
+          #    aws-access-key-id: ${{ vars.AWS_ACCESS_KEY_ID }}
+          #    aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          #    aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          #    aws-region: ${{ vars.AWS_REGION }}  
+          #- name: Configurando Terraform
+          #  uses: hashicorp/setup-terraform@v3
+          #- name: Terraform Init
+          #  run: terraform init -input=false
+          #- name: Terraform Format
+          #  run: terraform fmt -check
+          #- name: Terraform Apply RDS MySQL
+          #  run: terraform apply -var="aws_region=${{ vars.AWS_REGION }}" -var="idSecret=${{ github.run_id }}" -auto-approve
