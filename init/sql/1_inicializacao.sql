@@ -5,6 +5,10 @@ CREATE DATABASE IF NOT EXISTS fiap;
 
 USE fiap;
 
+CREATE USER 'user_fiap'@'%' IDENTIFIED BY 'pass_fiap';
+GRANT SELECT, INSERT, UPDATE, DELETE ON fiap.* TO 'user_fiap'@'%';
+FLUSH PRIVILEGES;
+
 -- Tabela Cliente
 CREATE TABLE Cliente (
     cpf CHAR(11) PRIMARY KEY,
