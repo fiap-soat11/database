@@ -35,13 +35,13 @@ resource "aws_security_group" "rds_mysql" {
   tags = { Name = "${var.project_name}-rds-sg" }
 }
 
-resource "aws_security_group_rule" "allow_app_sg_to_rds" {
-  for_each                 = toset(var.app_security_group_ids)
-  type                     = "ingress"
-  from_port                = 3306
-  to_port                  = 3306
-  protocol                 = "tcp"
-  security_group_id        = aws_security_group.rds_mysql.id
-  source_security_group_id = each.value
-  description              = "Allow App SG (${each.value}) to access MySQL 3306"
-}
+//resource "aws_security_group_rule" "allow_app_sg_to_rds" {
+//  for_each                 = toset(var.app_security_group_ids)
+//  type                     = "ingress"
+//  from_port                = 3306
+//  to_port                  = 3306
+//  protocol                 = "tcp"
+//  security_group_id        = aws_security_group.rds_mysql.id
+//  source_security_group_id = each.value
+//  description              = "Allow App SG (${each.value}) to access MySQL 3306"
+//}
