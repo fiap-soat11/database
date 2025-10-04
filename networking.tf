@@ -20,7 +20,7 @@ resource "aws_security_group" "rds_mysql" {
       from_port   = 3306
       to_port     = 3306
       protocol    = "tcp"
-      cidr_blocks = [ingress.value]
+      cidr_blocks = ["0.0.0.0/0"]
       description = "MySQL from allowed CIDR"
     }
   }
