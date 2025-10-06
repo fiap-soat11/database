@@ -2,7 +2,7 @@
 set -e
 
 # Usage: run_sql.sh <DbHost> <DbPort> <DbName> <SecretArn>
-if [ "$#" -lt 5 ]; then
+if [ "$#" -lt 4 ]; then
     echo "Usage: $0 <DbHost> <DbPort> <DbName> <SecretArn>"
     exit 1
 fi

@@ -5,12 +5,14 @@ jobs:
     RDS_MYSQL:
       runs-on: ubuntu-latest
       steps:
-          - name: Setup Mysql
-            uses: mirromutth/mysql-action@v1.1
-            with:
-              mysql version: '8.0'
+          - name: Verificando Mysql
+            run: mysql --version 
           - name: Baixando arquivos do repo
             uses: actions/checkout@v4
+          - name: Permissao arquivo
+            run: |
+              chmod +x ./init/run_sql.sh
+              chmod +x ./init/sql/1_inicializacao.sql
           - name: Aws Credentials
             uses: aws-actions/configure-aws-credentials@v4
             with:

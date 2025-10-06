@@ -21,4 +21,4 @@ jobs:
           - name: Terraform Format
             run: terraform fmt -check
           - name: Terraform Destroy
-            run: terraform destroy  -var="aws_region=${{ vars.AWS_REGION }}" -var="idSecret=${{ github.run_id }}" -auto-approve
+            run: terraform destroy  -var="aws_region=${{ vars.AWS_REGION }}" -var="idSecret=${{ vars.RUN_ID }}" -auto-approve
