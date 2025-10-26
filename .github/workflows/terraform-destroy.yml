@@ -1,0 +1,24 @@
+name: Destruir Amazon RDS MySQL
+on:
+    workflow_dispatch:
+jobs:
+    terraform:
+        runs-on: ubuntu-latest
+        steps:
+          - name: Baixando arquivos do repo
+            uses: actions/checkout@v4
+          - name: Aws Credentials
+            uses: aws-actions/configure-aws-credentials@v4
+            with:
+              aws-access-key-id: ${{ vars.AWS_ACCESS_KEY_ID }}
+              aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+              aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+              aws-region: ${{ vars.AWS_REGION }}  
+          - name: Configurando Terraform
+            uses: hashicorp/setup-terraform@v3
+          - name: Terraform Init
+            run: terraform init -input=false
+          - name: Terraform Format
+            run: terraform fmt -check
+          - name: Terraform Destroy
+            run: terraform destroy  -var="aws_region=${{ vars.AWS_REGION }}" -var="idSecret=${{ vars.RUN_ID }}" -auto-approve
