@@ -9,31 +9,11 @@ CREATE USER 'user_fiap'@'%' IDENTIFIED BY 'pass_fiap';
 GRANT SELECT, INSERT, UPDATE, DELETE ON fiap.* TO 'user_fiap'@'%';
 FLUSH PRIVILEGES;
 
--- Tabela Cliente
-CREATE TABLE Cliente (
-    cpf CHAR(11) PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    email VARCHAR(100),
-    ativo TINYINT(1) DEFAULT 1
-);
-
 -- Tabela Status
 CREATE TABLE Status (
     id_status INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(50) NOT NULL,
     descricao VARCHAR(200)
-);
-
--- Tabela Pedido
-CREATE TABLE Pedido (
-    id_pedido INT AUTO_INCREMENT PRIMARY KEY,
-    cpf CHAR(11),
-    id_status_atual INT,
-    valor_total DECIMAL(10,2),
-    data_pedido DATE,
-	qrcode LONGTEXT,
-    FOREIGN KEY (cpf) REFERENCES Cliente(cpf),
-    FOREIGN KEY (id_status_atual) REFERENCES Status(id_status)
 );
 
 -- Tabela Preparo
@@ -61,17 +41,6 @@ CREATE TABLE Produto (
     preco DECIMAL(10,2) NOT NULL,
     imagens VARCHAR(500),
     FOREIGN KEY (id_categoria) REFERENCES Categoria(id_categoria)
-);
-
--- Tabela Pedido_Produto
-CREATE TABLE Pedido_Produto (
-    id_pedido_produto INT AUTO_INCREMENT PRIMARY KEY,
-    id_pedido INT NOT NULL,
-    id_produto INT NOT NULL,
-    quantidade INT,
-    observacao VARCHAR(200),
-    FOREIGN KEY (id_pedido) REFERENCES Pedido(id_pedido),
-    FOREIGN KEY (id_produto) REFERENCES Produto(id_produto)
 );
 
 -- Tabela Ingrediente
