@@ -9,14 +9,6 @@ CREATE USER 'user_fiap'@'%' IDENTIFIED BY 'pass_fiap';
 GRANT SELECT, INSERT, UPDATE, DELETE ON fiap.* TO 'user_fiap'@'%';
 FLUSH PRIVILEGES;
 
--- Tabela Cliente
-CREATE TABLE Cliente (
-    cpf CHAR(11) PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    email VARCHAR(100),
-    ativo TINYINT(1) DEFAULT 1
-);
-
 -- Tabela Status
 CREATE TABLE Status (
     id_status INT AUTO_INCREMENT PRIMARY KEY,
@@ -24,25 +16,11 @@ CREATE TABLE Status (
     descricao VARCHAR(200)
 );
 
--- Tabela Pedido
-CREATE TABLE Pedido (
-    id_pedido INT AUTO_INCREMENT PRIMARY KEY,
-    cpf CHAR(11),
-    id_status_atual INT,
-    valor_total DECIMAL(10,2),
-    data_pedido DATE,
-	qrcode LONGTEXT,
-    FOREIGN KEY (cpf) REFERENCES Cliente(cpf),
-    FOREIGN KEY (id_status_atual) REFERENCES Status(id_status)
-);
-
 -- Tabela Preparo
 CREATE TABLE Preparo (
     id_preparo INT AUTO_INCREMENT PRIMARY KEY,
-    id_pedido INT NOT NULL,
     id_status INT NOT NULL,
     data_status DATETIME NOT NULL,
-    FOREIGN KEY (id_pedido) REFERENCES Pedido(id_pedido),
     FOREIGN KEY (id_status) REFERENCES Status(id_status)
 );
 
@@ -61,17 +39,6 @@ CREATE TABLE Produto (
     preco DECIMAL(10,2) NOT NULL,
     imagens VARCHAR(500),
     FOREIGN KEY (id_categoria) REFERENCES Categoria(id_categoria)
-);
-
--- Tabela Pedido_Produto
-CREATE TABLE Pedido_Produto (
-    id_pedido_produto INT AUTO_INCREMENT PRIMARY KEY,
-    id_pedido INT NOT NULL,
-    id_produto INT NOT NULL,
-    quantidade INT,
-    observacao VARCHAR(200),
-    FOREIGN KEY (id_pedido) REFERENCES Pedido(id_pedido),
-    FOREIGN KEY (id_produto) REFERENCES Produto(id_produto)
 );
 
 -- Tabela Ingrediente
@@ -112,13 +79,11 @@ CREATE TABLE Status_Pagamento (
 -- Tabela Pagamento
 CREATE TABLE Pagamento (
     id_pagamento INT AUTO_INCREMENT PRIMARY KEY,
-    id_pedido INT NOT NULL,
     data_pagamento DATETIME,
     id_forma_pagamento INT,
     valor_pago DECIMAL(10,2),
     id_status_pagamento INT,
     tentativa INT,
-    FOREIGN KEY (id_pedido) REFERENCES Pedido(id_pedido),
     FOREIGN KEY (id_forma_pagamento) REFERENCES Forma_pagamento(id_forma_pagamento),
     FOREIGN KEY (id_status_pagamento) REFERENCES Status_Pagamento(id_status_pagamento)
 );
