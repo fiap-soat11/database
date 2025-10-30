@@ -2,15 +2,15 @@ name: Construir Database RDS MySQL
 on:
     workflow_dispatch:
 jobs:
-    DbPreparo:
+    DbMysql:
       runs-on: ubuntu-latest
       steps:
           - name: Verificando Mysql
             run: mysql --version 
           - name: Baixando arquivos do repo
             uses: actions/checkout@v4
-          - name: Pasta do Preparo
-            run: cd db-preparo
+          - name: Pasta do MySQL
+            run: cd db-mysql
           - name: Permissao arquivo
             run: |
               chmod +x ./init/run_sql.sh
@@ -30,47 +30,9 @@ jobs:
             run: terraform fmt -check
           - name: Terraform Apply RDS MySQL
             run: terraform apply -var="aws_region=${{ vars.AWS_REGION }}" -var="idSecret=${{ github.run_id }}" -auto-approve
-    DbPagamento:
+    DbDynamoDB:
       runs-on: ubuntu-latest
       steps:
-          - name: Verificando Mysql
-            run: mysql --version 
-          - name: Baixando arquivos do repo
-            uses: actions/checkout@v4
-          - name: Pasta do Pagamento
-            run: cd db-pagamento  
-          - name: Permissao arquivo
-            run: |
-              chmod +x ./init/run_sql.sh
-              chmod +x ./init/sql/1_inicializacao.sql
-          - name: Aws Credentials
-            uses: aws-actions/configure-aws-credentials@v4
-            with:
-              aws-access-key-id: ${{ vars.AWS_ACCESS_KEY_ID }}
-              aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-              aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-              aws-region: ${{ vars.AWS_REGION }}  
-          - name: Configurando Terraform
-            uses: hashicorp/setup-terraform@v3
-          - name: Terraform Init
-            run: terraform init -input=false
-          - name: Terraform Format
-            run: terraform fmt -check
-          - name: Terraform Apply RDS MySQL
-            run: terraform apply -var="aws_region=${{ vars.AWS_REGION }}" -var="idSecret=${{ github.run_id }}" -auto-approve
-    DbPedido:
-      runs-on: ubuntu-latest
-      steps:
-          - name: Verificando Mysql
-            run: mysql --version 
-          - name: Baixando arquivos do repo
-            uses: actions/checkout@v4
-          - name: Pasta do Pedido
-            run: cd db-pedido
-          - name: Permissao arquivo
-            run: |
-              chmod +x ./init/run_sql.sh
-              chmod +x ./init/sql/1_inicializacao.sql
           - name: Aws Credentials
             uses: aws-actions/configure-aws-credentials@v4
             with:
