@@ -22,7 +22,6 @@ CREATE TABLE Status (
 -- Tabela Preparo
 CREATE TABLE Preparo (
     id_preparo INT AUTO_INCREMENT PRIMARY KEY,
-    id_pedido INT NOT NULL,
     id_status INT NOT NULL,
     data_status DATETIME NOT NULL,
     FOREIGN KEY (id_status) REFERENCES Status(id_status)
@@ -83,7 +82,6 @@ CREATE TABLE Status_Pagamento (
 -- Tabela Pagamento
 CREATE TABLE Pagamento (
     id_pagamento INT AUTO_INCREMENT PRIMARY KEY,
-    id_pedido INT NOT NULL,
     data_pagamento DATETIME,
     id_forma_pagamento INT,
     valor_pago DECIMAL(10,2),
