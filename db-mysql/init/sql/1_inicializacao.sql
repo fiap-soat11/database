@@ -5,6 +5,9 @@ CREATE DATABASE IF NOT EXISTS fiap;
 
 USE fiap;
 
+-- Remover usuário se já existir
+DROP USER IF EXISTS 'user_fiap'@'%';
+
 CREATE USER 'user_fiap'@'%' IDENTIFIED BY 'pass_fiap';
 GRANT SELECT, INSERT, UPDATE, DELETE ON fiap.* TO 'user_fiap'@'%';
 FLUSH PRIVILEGES;
