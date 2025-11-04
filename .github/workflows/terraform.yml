@@ -33,6 +33,10 @@ jobs:
     DbDynamoDB:
       runs-on: ubuntu-latest
       steps:
+          - name: Baixando arquivos do repo
+            uses: actions/checkout@v4
+          - name: Pasta do Dynamodb
+            run: cd db-dynamodb
           - name: Aws Credentials
             uses: aws-actions/configure-aws-credentials@v4
             with:
