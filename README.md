@@ -1,10 +1,37 @@
 # banco-de-dados
 Destinado aos arquivos de criação e inicialização do banco via terraform 
 
+# Executando databases localmente
 
-# Terraform AWS RDS MySQL
+## Mysql
 
-Este projeto provisiona um **banco de dados MySQL na AWS** usando **Terraform**, criando automaticamente:
+
+
+## DynamoDB
+
+1. Executar o comando docker para inicializar um container do dynamodb
+
+```sh
+docker run -d -p 8000:8000 --name dynamodb-local amazon/dynamodb-local:latest
+```
+
+2. Navegar até a pasta ./db-dynamodb/init
+
+3. Execute o comando para criar as tabelas no dynamodb instanciado
+
+Linux:
+```sh
+./init-dynamodb.sh
+```
+
+Windows;
+```sh
+.\init-dynamodb.ps1
+```
+
+# Terraform AWS RDS MySQL e DynamoDB
+
+Este projeto provisiona um **banco de dados MySQL na AWS** e tabelas no **DynamoDB na AWS** usando **Terraform**, criando automaticamente:
 
 - VPC com subnets públicas
 - Internet Gateway e Route Table
@@ -12,6 +39,7 @@ Este projeto provisiona um **banco de dados MySQL na AWS** usando **Terraform**,
 - Subnet Group para o RDS
 - Instância RDS MySQL
 - Execução de script SQL inicial ('init.sql') após criação do banco
+- Criação de tabelas no DynamoDB
 
 ---
 

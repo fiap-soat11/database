@@ -2,11 +2,13 @@ name: Destruir Amazon RDS MySQL
 on:
     workflow_dispatch:
 jobs:
-    terraform:
+    db-mysql:
         runs-on: ubuntu-latest
         steps:
           - name: Baixando arquivos do repo
             uses: actions/checkout@v4
+          - name: Pasta do MySQL
+            run: cd db-mysql
           - name: Aws Credentials
             uses: aws-actions/configure-aws-credentials@v4
             with:
