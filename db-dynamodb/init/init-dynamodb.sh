@@ -2,17 +2,19 @@
 
 echo "Configuração Completa do DynamoDB Local"
 
-if curl -s http://localhost:8000 > /dev/null 2>&1; then
-    echo "DynamoDB Local está rodando!"
-else
-    if docker run -d -p 8000:8000 --name dynamodb-local amazon/dynamodb-local > /dev/null 2>&1; then
-        echo "DynamoDB Local iniciado!"
-        sleep 3
-    else
-        echo "Erro ao iniciar DynamoDB Local"
+# Wait for DynamoDB to be ready
+echo "Aguardando DynamoDB Local estar disponível..."
+for i in {1..30}; do
+    if curl -s http://localhost:8000 > /dev/null 2>&1; then
+        echo "DynamoDB Local está rodando!"
+        break
+    fi
+    if [ $i -eq 30 ]; then
+        echo "Erro: DynamoDB Local não respondeu após 30 tentativas"
         exit 1
     fi
-fi
+    sleep 1
+done
 
 AWS_DIR="$HOME/.aws"
 if [ ! -d "$AWS_DIR" ]; then
@@ -48,6 +50,25 @@ else
         echo "Tabela 'Pedidos' criada com sucesso!"
     else
         echo "Erro ao criar tabela 'Pedidos'"
+        exit 1
+    fi
+fi
+
+if aws dynamodb describe-table --table-name Clientes --region us-east-1 --endpoint-url http://localhost:8000 > /dev/null 2>&1; then
+    echo "Tabela 'Clientes' já existe!"
+else
+    aws dynamodb create-table \
+        --table-name Clientes \
+        --attribute-definitions AttributeName=Cpf,AttributeType=N \
+        --key-schema AttributeName=Cpf,KeyType=HASH \
+        --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 \
+        --region us-east-1 \
+        --endpoint-url http://localhost:8000 > /dev/null 2>&1
+
+    if [ $? -eq 0 ]; then
+        echo "Tabela 'Clientes' criada com sucesso!"
+    else
+        echo "Erro ao criar tabela 'Clientes'"
         exit 1
     fi
 fi
