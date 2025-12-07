@@ -4,13 +4,14 @@ on:
 jobs:
     DbMysql:
       runs-on: ubuntu-latest
+      defaults:
+        run:
+          working-directory: db-mysql
       steps:
           - name: Verificando Mysql
             run: mysql --version 
           - name: Baixando arquivos do repo
             uses: actions/checkout@v4
-          - name: Pasta do MySQL
-            run: cd db-mysql
           - name: Permissao arquivo
             run: |
               chmod +x ./init/run_sql.sh
@@ -32,6 +33,9 @@ jobs:
             run: terraform apply -var="aws_region=${{ vars.AWS_REGION }}" -var="idSecret=${{ github.run_id }}" -auto-approve
     DbDynamoDB:
       runs-on: ubuntu-latest
+      defaults:
+        run:
+          working-directory: db-dynamodb
       steps:
           - name: Baixando arquivos do repo
             uses: actions/checkout@v4
@@ -50,5 +54,5 @@ jobs:
             run: terraform init -input=false
           - name: Terraform Format
             run: terraform fmt -check
-          - name: Terraform Apply RDS MySQL
+          - name: Terraform Apply DynamoDB
             run: terraform apply -var="aws_region=${{ vars.AWS_REGION }}" -var="idSecret=${{ github.run_id }}" -auto-approve
