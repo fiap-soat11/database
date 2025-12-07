@@ -16,14 +16,14 @@ variable "project_name" {
 
 variable "vpc_id" {
   type    = string
-  default = "vpc-090a0a9ea63030de5"
+  default = "vpc-0b366c2ddfe9ff1a5"
 }
 
 variable "private_subnet_ids" {
   type = list(string)
   default = [
-    "subnet-0283c4e2fb68b6403",
-    "subnet-024bfea7401bdbc83",
+    "subnet-0275ea4515c4fdece",
+    "subnet-0aae70dd1a6ca0122",
   ]
 }
 
@@ -67,7 +67,7 @@ variable "kms_key_id" {
 variable "app_security_group_ids" {
   type = list(string)
   default = [
-    "sg-00903f08050d8519c"
+    "sg-0c68246b12acd4d5a"
   ]
 }
 
