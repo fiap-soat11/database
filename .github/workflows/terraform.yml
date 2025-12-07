@@ -1,4 +1,4 @@
-name: Construir Database RDS MySQL
+name: Construir Bancos de Dados
 on:
     workflow_dispatch:
 jobs:
