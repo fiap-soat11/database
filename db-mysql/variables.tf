@@ -16,14 +16,14 @@ variable "project_name" {
 
 variable "vpc_id" {
   type    = string
-  default = "vpc-0b366c2ddfe9ff1a5"
+  default = "vpc-0dd46e3359f05bf16"
 }
 
 variable "private_subnet_ids" {
   type = list(string)
   default = [
-    "subnet-0275ea4515c4fdece",
-    "subnet-0aae70dd1a6ca0122",
+    "subnet-004aa0716fe106a43",
+    "subnet-079463b9c8cc47a8f",
   ]
 }
 
