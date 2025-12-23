@@ -111,8 +111,8 @@ variable "multi_az" {
 variable "init_sql_paths" {
   type = list(string)
   default = [
-    "1_inicializacao.sql",
-    "2_dados_iniciais.sql",
+    "1_inicializacao.sql" /*,
+    "2_dados_iniciais.sql",*/
   ]
 }
 
